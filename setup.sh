@@ -2,6 +2,8 @@
 # Mac 개발환경 원클릭 셋업
 # 새 Mac(아무것도 설치 안 된 상태)에서 실행:
 #   curl -fsSL https://raw.githubusercontent.com/__REPO__/main/setup.sh | bash
+# 집 맥북 (DisplayLink + vdisplay 포함):
+#   curl -fsSL https://raw.githubusercontent.com/__REPO__/main/setup.sh | bash -s -- --home
 # 이미 받은 저장소에서 실행:
 #   bash setup.sh
 #
@@ -11,6 +13,17 @@ set -uo pipefail
 
 # curl | bash 실행 시 스크립트 전체를 먼저 읽도록 함수로 감쌈
 main() {
+HOME_SETUP=""
+for arg in "$@"; do
+  case "$arg" in
+    --home)    HOME_SETUP=1 ;;
+    --no-home) HOME_SETUP=0 ;;
+  esac
+done
+if [[ -z "$HOME_SETUP" ]]; then
+  read -r -p "집 맥북 세팅(DisplayLink + vdisplay)도 할까요? [y/N] " ans || ans=""
+  [[ "$ans" =~ ^[Yy] ]] && HOME_SETUP=1 || HOME_SETUP=0
+fi
 
 REPO="${MAC_SETUP_REPO:-__REPO__}"
 BRANCH="${MAC_SETUP_BRANCH:-main}"
@@ -124,6 +137,29 @@ fi
 [[ -x "$HOME/.local/bin/claude" ]] && ok "claude 설치됨"
 
 # ---------------------------------------------------------------
+# 7-1. 집 맥북 전용 (--home): DisplayLink + vdisplay
+# ---------------------------------------------------------------
+if [[ "$HOME_SETUP" == 1 ]]; then
+  step "집 맥북: DisplayLink"
+  brew bundle --file="$SRC/Brewfile.home" && ok "DisplayLink Manager" || warn "Brewfile.home 실패"
+
+  step "집 맥북: vdisplay (private 저장소 → GitHub 로그인 필요)"
+  if ! gh auth status >/dev/null 2>&1; then
+    echo "  GitHub 로그인을 시작합니다. SSH 키가 없으면 새로 만들어 등록합니다."
+    gh auth login --hostname github.com --git-protocol ssh --web || warn "gh 로그인 실패"
+  fi
+  mkdir -p "$HOME/git"
+  if [[ ! -d "$HOME/git/vdisplay" ]]; then
+    GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=accept-new" git clone -q git@github.com:jungjoongi/vdisplay.git "$HOME/git/vdisplay" \
+      || warn "vdisplay clone 실패 (gh 로그인 / SSH 키 확인)"
+  fi
+  if [[ -d "$HOME/git/vdisplay" ]]; then
+    make -C "$HOME/git/vdisplay" install && ok "vdisplay 설치 + 로그인 시 자동 실행 등록" \
+      || warn "vdisplay 빌드/설치 실패"
+  fi
+fi
+
+# ---------------------------------------------------------------
 # 8. git / macOS 설정
 # ---------------------------------------------------------------
 step "git-lfs, macOS 설정"
@@ -143,7 +179,7 @@ cat <<EOF
 남은 작업(권한 허용, 로그인 등)은 스크립트로 할 수 없습니다.
 새 터미널을 열고 아래를 실행하세요:
 
-  cd $SRC && claude "CLAUDE.md 읽고 남은 셋업 마무리해줘"
+  cd $SRC && claude "CLAUDE.md 읽고 남은 셋업 마무리해줘$([[ "$HOME_SETUP" == 1 ]] && echo ' (집 맥북)')"
 
 EOF
 }

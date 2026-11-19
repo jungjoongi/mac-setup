@@ -85,6 +85,36 @@ command -v claude
 - **Claude Code**: `claude` 첫 실행 시 로그인.
 - Slack, Notion, Obsidian, Bitwarden, KakaoTalk 등은 각 앱에서 로그인.
 
+## 5-1. 집 맥북 전용 (사용자가 "집 맥북"이라고 했거나 `~/git/vdisplay`가 있을 때만)
+
+`setup.sh --home`(또는 시작 질문에 y)으로 실행하면 DisplayLink Manager(`Brewfile.home`)와
+[vdisplay](https://github.com/jungjoongi/vdisplay)(private)가 설치된다.
+vdisplay는 DisplayLink로 연결한 LG FHD 세로 모니터(vendor 7789 / model 23381)를
+1440×2560 HiDPI 가상 화면 미러링으로 넓게 쓰는 도구다. 회사 맥북이면 이 단계는 건너뛴다.
+
+1. 설치 확인. 하나라도 없으면 아래 순서로 직접 처리:
+   ```bash
+   ls -d "/Applications/DisplayLink Manager.app" ~/git/vdisplay ~/.local/bin/vdisplay \
+         ~/Library/LaunchAgents/com.user.vdisplay.plist
+   ```
+   - DisplayLink 없음 → `! brew bundle --file=Brewfile.home` (sudo 필요하므로 사용자 실행)
+   - 저장소 없음 → `gh auth status` 확인 후 `git clone git@github.com:jungjoongi/vdisplay.git ~/git/vdisplay`
+   - 실행 파일/자동 실행 없음 → `make -C ~/git/vdisplay install`
+2. **DisplayLink Manager 권한 (사용자 직접)**: 앱 실행 → 시스템 설정 → 개인정보 보호 및 보안 →
+   **화면 및 시스템 오디오 녹음**에서 DisplayLink Manager 허용. 로그인 시 자동 실행도 켜도록 안내.
+3. 모니터 회전: 시스템 설정 → 디스플레이 → LG FULL HD → 회전 **270°** (사용자 직접).
+4. 동작 확인:
+   ```bash
+   make -C ~/git/vdisplay status   # state = running
+   make -C ~/git/vdisplay logs     # "미러링 적용: ... err=0" 이 있어야 정상
+   ~/.local/bin/vdisplay --list    # vendor=7789 모니터가 1440x2560 (px 2880x5120) 이면 정상
+   ```
+   - "대상 모니터 없음" → DisplayLink Manager 실행/케이블 확인. 연결되면 자동 적용됨.
+   - 미러링이 꼬였으면 `make -C ~/git/vdisplay restart`.
+   - 해상도 변경: `~/git/vdisplay/scripts/install.sh 1260 2240` (9:16 유지).
+5. BetterDisplay에서 LG 모니터 해상도를 바꾸거나 가상 화면을 만들지 말라고 안내 (vdisplay와 충돌).
+6. 자세한 사용법/문제 해결은 `~/git/vdisplay/README.md`를 읽고 따른다.
+
 ## 6. 알려진 문제
 
 - **awscli 실행 시 `pyexpat ... Symbol not found: _XML_SetAllocTrackerActivationThreshold`**:

@@ -1,0 +1,2 @@
+# 집 맥북 전용 (setup.sh --home)
+cask "displaylink"   # DisplayLink 독/모니터 드라이버 (vdisplay가 필요로 함)
