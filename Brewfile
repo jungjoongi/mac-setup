@@ -26,7 +26,6 @@ brew "wget"
 brew "mas"         # App Store 앱 설치용
 
 # ===== 개발 앱 =====
-cask "visual-studio-code"
 cask "postman"
 cask "orbstack"
 cask "session-manager-plugin"
