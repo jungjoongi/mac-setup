@@ -4,17 +4,84 @@
             "complex_modifications": {
                 "rules": [
                     {
+                        "description": "Caps Lock → 한/영 전환 (지연 없음)",
+                        "manipulators": [
+                            {
+                                "type": "basic",
+                                "from": {
+                                    "key_code": "caps_lock",
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "select_input_source": {
+                                            "input_source_id": "com.apple.inputmethod.Korean.2SetKorean"
+                                        }
+                                    }
+                                ],
+                                "conditions": [
+                                    {
+                                        "type": "input_source_if",
+                                        "input_sources": [
+                                            {
+                                                "language": "en"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "basic",
+                                "from": {
+                                    "key_code": "caps_lock",
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "select_input_source": {
+                                            "input_source_id": "com.apple.keylayout.ABC"
+                                        }
+                                    }
+                                ],
+                                "conditions": [
+                                    {
+                                        "type": "input_source_if",
+                                        "input_sources": [
+                                            {
+                                                "language": "ko"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
                         "description": "Number 1 + Control = F1 with fn action",
                         "manipulators": [
                             {
                                 "from": {
                                     "key_code": "1",
-                                    "modifiers": { "mandatory": ["right_control"] }
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "right_control"
+                                        ]
+                                    }
                                 },
                                 "to": [
                                     {
                                         "key_code": "f1",
-                                        "modifiers": ["fn"],
+                                        "modifiers": [
+                                            "fn"
+                                        ],
                                         "repeat": true
                                     }
                                 ],
@@ -28,12 +95,18 @@
                             {
                                 "from": {
                                     "key_code": "2",
-                                    "modifiers": { "mandatory": ["right_control"] }
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "right_control"
+                                        ]
+                                    }
                                 },
                                 "to": [
                                     {
                                         "key_code": "f2",
-                                        "modifiers": ["fn"],
+                                        "modifiers": [
+                                            "fn"
+                                        ],
                                         "repeat": true
                                     }
                                 ],
@@ -47,12 +120,18 @@
                             {
                                 "from": {
                                     "key_code": "3",
-                                    "modifiers": { "mandatory": ["right_control"] }
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "right_control"
+                                        ]
+                                    }
                                 },
                                 "to": [
                                     {
                                         "key_code": "f3",
-                                        "modifiers": ["fn"],
+                                        "modifiers": [
+                                            "fn"
+                                        ],
                                         "repeat": true
                                     }
                                 ],
@@ -66,12 +145,18 @@
                             {
                                 "from": {
                                     "key_code": "4",
-                                    "modifiers": { "mandatory": ["right_control"] }
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "right_control"
+                                        ]
+                                    }
                                 },
                                 "to": [
                                     {
                                         "key_code": "f4",
-                                        "modifiers": ["fn"],
+                                        "modifiers": [
+                                            "fn"
+                                        ],
                                         "repeat": true
                                     }
                                 ],
@@ -85,12 +170,18 @@
                             {
                                 "from": {
                                     "key_code": "5",
-                                    "modifiers": { "mandatory": ["right_control"] }
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "right_control"
+                                        ]
+                                    }
                                 },
                                 "to": [
                                     {
                                         "key_code": "f5",
-                                        "modifiers": ["fn"],
+                                        "modifiers": [
+                                            "fn"
+                                        ],
                                         "repeat": true
                                     }
                                 ],
@@ -104,12 +195,18 @@
                             {
                                 "from": {
                                     "key_code": "6",
-                                    "modifiers": { "mandatory": ["right_control"] }
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "right_control"
+                                        ]
+                                    }
                                 },
                                 "to": [
                                     {
                                         "key_code": "f6",
-                                        "modifiers": ["fn"],
+                                        "modifiers": [
+                                            "fn"
+                                        ],
                                         "repeat": true
                                     }
                                 ],
@@ -123,12 +220,18 @@
                             {
                                 "from": {
                                     "key_code": "7",
-                                    "modifiers": { "mandatory": ["right_control"] }
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "right_control"
+                                        ]
+                                    }
                                 },
                                 "to": [
                                     {
                                         "key_code": "f7",
-                                        "modifiers": ["fn"],
+                                        "modifiers": [
+                                            "fn"
+                                        ],
                                         "repeat": true
                                     }
                                 ],
@@ -142,12 +245,18 @@
                             {
                                 "from": {
                                     "key_code": "8",
-                                    "modifiers": { "mandatory": ["right_control"] }
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "right_control"
+                                        ]
+                                    }
                                 },
                                 "to": [
                                     {
                                         "key_code": "f8",
-                                        "modifiers": ["fn"],
+                                        "modifiers": [
+                                            "fn"
+                                        ],
                                         "repeat": true
                                     }
                                 ],
@@ -161,12 +270,18 @@
                             {
                                 "from": {
                                     "key_code": "9",
-                                    "modifiers": { "mandatory": ["right_control"] }
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "right_control"
+                                        ]
+                                    }
                                 },
                                 "to": [
                                     {
                                         "key_code": "f9",
-                                        "modifiers": ["fn"],
+                                        "modifiers": [
+                                            "fn"
+                                        ],
                                         "repeat": true
                                     }
                                 ],
@@ -180,12 +295,18 @@
                             {
                                 "from": {
                                     "key_code": "0",
-                                    "modifiers": { "mandatory": ["right_control"] }
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "right_control"
+                                        ]
+                                    }
                                 },
                                 "to": [
                                     {
                                         "key_code": "f10",
-                                        "modifiers": ["fn"],
+                                        "modifiers": [
+                                            "fn"
+                                        ],
                                         "repeat": true
                                     }
                                 ],
@@ -199,12 +320,18 @@
                             {
                                 "from": {
                                     "key_code": "hyphen",
-                                    "modifiers": { "mandatory": ["right_control"] }
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "right_control"
+                                        ]
+                                    }
                                 },
                                 "to": [
                                     {
                                         "key_code": "f11",
-                                        "modifiers": ["fn"],
+                                        "modifiers": [
+                                            "fn"
+                                        ],
                                         "repeat": true
                                     }
                                 ],
@@ -218,12 +345,18 @@
                             {
                                 "from": {
                                     "key_code": "equal_sign",
-                                    "modifiers": { "mandatory": ["right_control"] }
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "right_control"
+                                        ]
+                                    }
                                 },
                                 "to": [
                                     {
                                         "key_code": "f12",
-                                        "modifiers": ["fn"],
+                                        "modifiers": [
+                                            "fn"
+                                        ],
                                         "repeat": true
                                     }
                                 ],
@@ -238,13 +371,25 @@
                             {
                                 "from": {
                                     "key_code": "spacebar",
-                                    "modifiers": { "mandatory": ["command", "shift"] }
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "command",
+                                            "shift"
+                                        ]
+                                    }
                                 },
                                 "to": [
-                                    { "select_input_source": { "language": "en" } },
+                                    {
+                                        "select_input_source": {
+                                            "language": "en"
+                                        }
+                                    },
                                     {
                                         "key_code": "spacebar",
-                                        "modifiers": ["command", "shift"]
+                                        "modifiers": [
+                                            "command",
+                                            "shift"
+                                        ]
                                     }
                                 ],
                                 "type": "basic"
@@ -262,20 +407,21 @@
                     },
                     "simple_modifications": [
                         {
-                            "from": { "key_code": "right_option" },
-                            "to": [{ "apple_vendor_top_case_key_code": "keyboard_fn" }]
+                            "from": {
+                                "key_code": "right_option"
+                            },
+                            "to": [
+                                {
+                                    "apple_vendor_top_case_key_code": "keyboard_fn"
+                                }
+                            ]
                         }
                     ]
                 }
             ],
             "name": "Default profile",
             "selected": true,
-            "simple_modifications": [
-                {
-                    "from": { "key_code": "caps_lock" },
-                    "to": [{ "key_code": "f19" }]
-                }
-            ],
+            "simple_modifications": [],
             "virtual_hid_keyboard": {
                 "country_code": 0,
                 "keyboard_type_v2": "ansi"

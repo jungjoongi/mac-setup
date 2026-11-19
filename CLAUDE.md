@@ -59,12 +59,14 @@ command -v claude
 - **Rectangle / Maccy / Stats**: 첫 실행 시 손쉬운 사용 권한 요청 → 허용.
   Raycast와 단축키가 겹치면 어느 쪽을 쓸지 사용자에게 묻는다.
 - **키 반복**: `ApplePressAndHoldEnabled` 설정은 로그아웃/재로그인 후 적용된다.
-- **한/영 전환 (Caps Lock)**: Karabiner가 Caps Lock → F19로 바꾸고, setup.sh가 macOS 단축키
-  "이전 입력 소스 선택"을 F19로 설정한다. 새 Mac에는 한국어 입력기가 없으므로 사용자에게
-  시스템 설정 → 키보드 → 입력 소스 → 편집 → **+ → 한국어 → 2벌식** 추가를 안내한다.
-  - 확인: 시스템 설정 → 키보드 → 키보드 단축키 → 입력 소스 → "이전 입력 소스 선택"이 F19(Caps Lock)인지.
-  - 빠르게 타자 치며 전환할 때 지연이 있으면: 입력 소스 표시 팝업이 원인인 경우가 많다.
-    `defaults read kCFPreferencesAnyApplication TSMLanguageIndicatorEnabled` 가 0인지 확인하고, 재로그인.
+- **한/영 전환 (Caps Lock)**: Karabiner 규칙 "Caps Lock → 한/영 전환"이 입력 소스를 직접 바꾼다
+  (영문이면 `com.apple.inputmethod.Korean.2SetKorean`, 한국어면 `com.apple.keylayout.ABC`).
+  macOS 단축키(F19 → 이전 입력 소스 선택)를 거치면 전환이 늦어 첫 단어가 이전 언어로 입력되므로 쓰지 않는다.
+  - 새 Mac에는 한국어 입력기가 없으므로 사용자에게 시스템 설정 → 키보드 → 입력 소스 → 편집 →
+    **+ → 한국어 → 2벌식** 추가를 안내한다. 없으면 Caps Lock으로 한국어 전환이 안 된다.
+  - 확인: `defaults read com.apple.HIToolbox AppleEnabledInputSources` 에 `2SetKorean`과 `ABC`가 있어야 함.
+  - 시스템 설정 → 키보드 → 입력 소스의 "Caps Lock 키로 ABC 입력 소스 전환"은 꺼둔다 (Karabiner와 충돌).
+  - 입력 소스 전환 팝업은 setup.sh가 끈다 (`TSMLanguageIndicatorEnabled 0`, 재로그인 후 적용).
 
 ## 5. 계정 / 로그인 (사용자 직접, 대화형)
 
