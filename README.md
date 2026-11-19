@@ -46,9 +46,19 @@ Claude가 [CLAUDE.md](CLAUDE.md)를 보고 안내합니다.
 | `dotfiles/p10k.zsh` | Powerlevel10k 프롬프트 설정 |
 | `dotfiles/DefaultKeyBinding.dict` | 한글 키보드에서 ₩ → ` |
 | `karabiner/karabiner.json` | Karabiner-Elements 설정 |
+| `dotfiles/claude-hud-config.json` | Claude HUD 상태 줄 설정 (에이전트·할 일·effort 표시) |
+| `carousel-order` | claude-carousel 프로필과 넘어가는 순서. 토큰은 Bitwarden Secrets Manager에서 가져옴 |
 | `CLAUDE.md` | 스크립트 이후 마무리 작업 가이드 (Claude용) |
 
 ## zsh 플러그인
 
 git, sudo, extract, aws, docker, fzf, fzf-tab, you-should-use,
 zsh-autosuggestions, zsh-syntax-highlighting, zsh-completions
+
+## Claude Code 도구
+
+- **Claude HUD**: 입력창 아래 상태 줄. 지금 프로필 이름, 모델, effort, 컨텍스트, 사용량을 보여줍니다.
+- **secrets**: Bitwarden Secrets Manager에서 키를 값 노출 없이 꺼내 쓰는 Claude Code 플러그인.
+  설치 중에 이 Mac용 액세스 토큰을 등록할 수 있습니다.
+- **claude-carousel (`cc`)**: 여러 Claude 계정을 프로필로 두고, 사용 한도에 걸리면 다음 계정으로 넘어갑니다.
+  secrets 토큰이 등록되어 있으면 `carousel-order`의 프로필을 Secrets Manager 토큰으로 자동 등록합니다.

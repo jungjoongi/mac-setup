@@ -4,67 +4,6 @@
             "complex_modifications": {
                 "rules": [
                     {
-                        "description": "Caps Lock → 한/영 전환 (지연 없음)",
-                        "manipulators": [
-                            {
-                                "type": "basic",
-                                "from": {
-                                    "key_code": "caps_lock",
-                                    "modifiers": {
-                                        "optional": [
-                                            "any"
-                                        ]
-                                    }
-                                },
-                                "to": [
-                                    {
-                                        "select_input_source": {
-                                            "input_source_id": "com.apple.inputmethod.Korean.2SetKorean"
-                                        }
-                                    }
-                                ],
-                                "conditions": [
-                                    {
-                                        "type": "input_source_if",
-                                        "input_sources": [
-                                            {
-                                                "language": "en"
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
-                            {
-                                "type": "basic",
-                                "from": {
-                                    "key_code": "caps_lock",
-                                    "modifiers": {
-                                        "optional": [
-                                            "any"
-                                        ]
-                                    }
-                                },
-                                "to": [
-                                    {
-                                        "select_input_source": {
-                                            "input_source_id": "com.apple.keylayout.ABC"
-                                        }
-                                    }
-                                ],
-                                "conditions": [
-                                    {
-                                        "type": "input_source_if",
-                                        "input_sources": [
-                                            {
-                                                "language": "ko"
-                                            }
-                                        ]
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    {
                         "description": "Number 1 + Control = F1 with fn action",
                         "manipulators": [
                             {
@@ -421,7 +360,18 @@
             ],
             "name": "Default profile",
             "selected": true,
-            "simple_modifications": [],
+            "simple_modifications": [
+                {
+                    "from": {
+                        "key_code": "caps_lock"
+                    },
+                    "to": [
+                        {
+                            "key_code": "f19"
+                        }
+                    ]
+                }
+            ],
             "virtual_hid_keyboard": {
                 "country_code": 0,
                 "keyboard_type_v2": "ansi"

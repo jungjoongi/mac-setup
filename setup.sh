@@ -135,6 +135,88 @@ if [[ ! -x "$HOME/.local/bin/claude" ]] && ! command -v claude >/dev/null 2>&1; 
   curl -fsSL https://claude.ai/install.sh | bash || warn "Claude CLI 설치 실패"
 fi
 [[ -x "$HOME/.local/bin/claude" ]] && ok "claude 설치됨"
+export PATH="$HOME/.local/bin:$PATH"
+
+# ---------------------------------------------------------------
+# 7-0. Claude Code 도구: Node LTS, Claude HUD, secrets, claude-carousel
+# ---------------------------------------------------------------
+step "Node.js LTS (nvm)"
+export NVM_DIR="$HOME/.nvm"
+NODE_BIN=""
+if [[ -s "$(brew --prefix)/opt/nvm/nvm.sh" ]]; then
+  # shellcheck disable=SC1091
+  . "$(brew --prefix)/opt/nvm/nvm.sh"
+  nvm install --lts >/dev/null && nvm alias default 'lts/*' >/dev/null && NODE_BIN="$(nvm which default)"
+fi
+[[ -x "$NODE_BIN" ]] && ok "node $("$NODE_BIN" -v)" || warn "Node LTS 설치 실패 (HUD에 필요)"
+
+step "Claude Code 플러그인 (claude-hud, secrets)"
+if command -v claude >/dev/null 2>&1; then
+  claude plugin marketplace add jarrodwatts/claude-hud >/dev/null 2>&1 || true
+  claude plugin install claude-hud@claude-hud >/dev/null 2>&1 || warn "claude-hud 플러그인 설치 실패"
+  claude plugin marketplace add jungjoongi/awesome-plugins >/dev/null 2>&1 || true
+  claude plugin install secrets@awesome-plugins >/dev/null 2>&1 || warn "secrets 플러그인 설치 실패"
+  ok "플러그인 설치"
+else
+  warn "claude 명령이 없어 플러그인을 건너뜀"
+fi
+
+# HUD: 설정 복사 + 상태 줄 연결 (nvm Node는 PATH에 없으므로 전체 경로로 연결)
+HUD_MJS="$(ls -d "$HOME"/.claude/plugins/cache/claude-hud/claude-hud/*/hud.mjs 2>/dev/null | sort -V | tail -1)"
+install_file "$SRC/dotfiles/claude-hud-config.json" "$HOME/.claude/plugins/claude-hud/config.json"
+if [[ -n "$HUD_MJS" && -x "$NODE_BIN" ]]; then
+  "$NODE_BIN" "$HUD_MJS" install >/dev/null && ok "Claude HUD 상태 줄 연결" || warn "HUD 연결 실패 → Claude Code에서 /hud"
+fi
+
+# secrets (Bitwarden Secrets Manager): shim, bws, 상태 폴더
+SECRETS_SRC="$(ls -d "$HOME"/.claude/plugins/cache/awesome-plugins/secrets/*/skills/secrets/scripts/secrets 2>/dev/null | sort -V | tail -1)"
+if [[ -n "$SECRETS_SRC" ]]; then
+  "$SECRETS_SRC" setup shim >/dev/null 2>&1 || true
+  command -v bws >/dev/null 2>&1 || "$SECRETS_SRC" setup bws || warn "bws 설치 실패"
+  "$SECRETS_SRC" doctor --fix >/dev/null 2>&1 || true
+  if ! secrets doctor 2>/dev/null | grep -q '^ok   auth'; then
+    echo
+    echo "  Bitwarden Secrets Manager 액세스 토큰을 지금 등록할 수 있습니다."
+    echo "  (웹 → Secrets Manager → 머신 계정 → 액세스 토큰 → 이 Mac 이름으로 새 토큰 발급·복사)"
+    read -r -p "  지금 등록할까요? [y/N] " ans || ans=""
+    if [[ "$ans" =~ ^[Yy] ]]; then
+      secrets setup token && secrets setup project main --create >/dev/null || warn "secrets 토큰 등록 실패"
+    fi
+  fi
+  secrets doctor 2>/dev/null | grep -q '^ok   auth' && ok "secrets 준비됨" || warn "secrets 토큰 미등록 → 나중에 'secrets setup token'"
+fi
+
+step "claude-carousel (cc)"
+if [[ ! -x "$HOME/.local/bin/carousel" ]]; then
+  # 단축 명령(cc)은 dotfiles/zshrc 에 이미 있으므로 등록하지 않음
+  curl -fsSL https://raw.githubusercontent.com/jungjoongi/claude-carousel/main/install.sh \
+    | CAROUSEL_NO_PROMPT=1 bash >/dev/null || warn "carousel 설치 실패"
+fi
+if command -v carousel >/dev/null 2>&1 && secrets doctor 2>/dev/null | grep -q '^ok   auth'; then
+  # carousel-order 의 프로필마다 Secrets Manager의 PERSONAL_CAROUSEL_TOKEN_<이름> 을 등록 (값은 화면에 나오지 않음)
+  keys="$(secrets list --prefix PERSONAL_CAROUSEL_TOKEN_ 2>/dev/null | awk 'NR>1 {print $1}')"
+  for p in $(cat "$SRC/carousel-order"); do
+    [[ "$p" == default ]] && continue
+    key="PERSONAL_CAROUSEL_TOKEN_$(printf '%s' "$p" | tr '[:lower:]' '[:upper:]')"
+    grep -qx "$key" <<<"$keys" || { warn "Secrets Manager에 $key 없음 → 프로필 $p 건너뜀"; continue; }
+    [[ -d "$HOME/.claude-carousel/profiles/$p" ]] || carousel add "$p" < /dev/null >/dev/null 2>&1
+    secrets run --map TOK="$key" -- sh -c 'printf "%s\n" "$TOK" | carousel token "$1" >/dev/null 2>&1' _ "$p" \
+      && ok "carousel 프로필 $p" || warn "carousel 프로필 $p 토큰 등록 실패"
+  done
+  order=""
+  for p in $(cat "$SRC/carousel-order"); do
+    [[ "$p" == default || -d "$HOME/.claude-carousel/profiles/$p" ]] && order="$order $p"
+  done
+  # shellcheck disable=SC2086
+  [[ -n "$order" ]] && carousel order $order >/dev/null && ok "순서:$order"
+fi
+# HUD에 프로필 이름 표시 (설정 폴더마다 claude-hud.json)
+hud_label() { printf '{\n  "display": {\n    "showProvider": true,\n    "providerName": "%s"\n  }\n}\n' "$1" > "$2"; }
+hud_label default "$HOME/.claude/claude-hud.json"
+for d in "$HOME"/.claude-carousel/profiles/*/; do
+  [[ -d "$d" ]] && hud_label "$(basename "$d")" "$d/claude-hud.json"
+done
+ok "HUD 프로필 이름 표시"
 
 # ---------------------------------------------------------------
 # 7-1. 집 맥북 전용 (--home): DisplayLink + vdisplay
@@ -166,7 +248,10 @@ step "git-lfs, macOS 설정"
 git lfs install >/dev/null 2>&1 || true
 defaults write -g ApplePressAndHoldEnabled -bool false   # 키 길게 누르면 반복 입력
 defaults write kCFPreferencesAnyApplication TSMLanguageIndicatorEnabled 0   # 입력 소스 전환 팝업 끄기 (한/영 전환 지연 방지)
-ok "키 반복, 입력 소스 팝업 끄기 (재로그인 후 적용)"
+# 한/영 전환: Karabiner가 Caps Lock → F19, macOS "이전 입력 소스 선택" = F19 (숫자 타입으로 저장해야 인식됨)
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 60 '<dict><key>enabled</key><true/><key>value</key><dict><key>parameters</key><array><integer>65535</integer><integer>80</integer><integer>8388608</integer></array><key>type</key><string>standard</string></dict></dict>'
+/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u 2>/dev/null || true
+ok "키 반복, 입력 소스 팝업 끄기, Caps Lock(F19) 한/영 전환 (재로그인 후 적용)"
 
 # ---------------------------------------------------------------
 # 끝

@@ -23,6 +23,7 @@ brew "git-delta"
 brew "btop"
 brew "tlrc"        # tldr 명령
 brew "wget"
+brew "bitwarden-cli" # Bitwarden 비밀번호 보관함 CLI (bw)
 brew "mas"         # App Store 앱 설치용
 
 # ===== 개발 앱 =====

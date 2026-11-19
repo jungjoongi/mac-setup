@@ -59,14 +59,16 @@ command -v claude
 - **Rectangle / Maccy / Stats**: 첫 실행 시 손쉬운 사용 권한 요청 → 허용.
   Raycast와 단축키가 겹치면 어느 쪽을 쓸지 사용자에게 묻는다.
 - **키 반복**: `ApplePressAndHoldEnabled` 설정은 로그아웃/재로그인 후 적용된다.
-- **한/영 전환 (Caps Lock)**: Karabiner 규칙 "Caps Lock → 한/영 전환"이 입력 소스를 직접 바꾼다
-  (영문이면 `com.apple.inputmethod.Korean.2SetKorean`, 한국어면 `com.apple.keylayout.ABC`).
-  macOS 단축키(F19 → 이전 입력 소스 선택)를 거치면 전환이 늦어 첫 단어가 이전 언어로 입력되므로 쓰지 않는다.
+- **한/영 전환 (Caps Lock)**: Karabiner가 Caps Lock → F19로 바꾸고(simple modification),
+  setup.sh가 macOS 단축키 "이전 입력 소스 선택"을 F19로 설정한다.
+  - Karabiner가 입력 소스를 직접 바꾸는 방식(`select_input_source`)은 쓰지 않는다. 상단바만 바뀌고
+    입력칸에는 반영되지 않는 경우가 있다. macOS 기본 "Caps Lock 키로 ABC 입력 소스 전환"도 끈다.
   - 새 Mac에는 한국어 입력기가 없으므로 사용자에게 시스템 설정 → 키보드 → 입력 소스 → 편집 →
-    **+ → 한국어 → 2벌식** 추가를 안내한다. 없으면 Caps Lock으로 한국어 전환이 안 된다.
-  - 확인: `defaults read com.apple.HIToolbox AppleEnabledInputSources` 에 `2SetKorean`과 `ABC`가 있어야 함.
-  - 시스템 설정 → 키보드 → 입력 소스의 "Caps Lock 키로 ABC 입력 소스 전환"은 꺼둔다 (Karabiner와 충돌).
-  - 입력 소스 전환 팝업은 setup.sh가 끈다 (`TSMLanguageIndicatorEnabled 0`, 재로그인 후 적용).
+    **+ → 한국어 → 2벌식** 추가를 안내한다.
+  - 확인: 시스템 설정 → 키보드 → 키보드 단축키 → 입력 소스 → "이전 입력 소스 선택"이 켜져 있고 F19인지.
+    직접 바꿀 때 `defaults write ... -dict-add 60 '{ ... }'`(문자열 문법)을 쓰면 값이 문자열로 저장돼
+    인식되지 않는다. setup.sh의 XML 문법(`<integer>`)을 쓴다.
+  - 입력 소스 전환 팝업은 setup.sh가 끈다 (`TSMLanguageIndicatorEnabled 0`). 전환 지연을 줄인다. 재로그인 후 적용.
 
 ## 5. 계정 / 로그인 (사용자 직접, 대화형)
 
@@ -89,11 +91,38 @@ command -v claude
     ```
   - 그리고 `ssh-add --apple-use-keychain ~/.ssh/id_ed25519` (사용자 직접, passphrase 입력).
 - **AWS**: `aws configure` 또는 `aws-vault add <프로필>` (새 터미널에서 직접). 키는 Claude가 받지 않는다.
-- **Node**: `nvm install --lts` 후 `node -v` 확인.
-- **Claude Code**: `claude` 첫 실행 시 로그인.
+- **Node**: setup.sh가 nvm으로 LTS를 설치하고 기본값으로 지정한다. 확인: 새 터미널에서 `node -v`.
+- **Claude Code**: `claude` 첫 실행 시 로그인 (이 계정이 carousel의 `default` 프로필).
 - Slack, Notion, Obsidian, Bitwarden, KakaoTalk 등은 각 앱에서 로그인.
 
-## 5-1. 집 맥북 전용 (사용자가 "집 맥북"이라고 했거나 `~/git/vdisplay`가 있을 때만)
+## 5-1. Claude Code 도구 (HUD, secrets, claude-carousel)
+
+setup.sh가 설치한다: Claude HUD 플러그인(상태 줄), secrets 플러그인(Bitwarden Secrets Manager),
+claude-carousel(`cc`, 여러 계정을 번갈아 쓰기). 아래로 확인하고 빠진 것만 처리한다.
+
+1. **secrets**: `secrets doctor`. 처리 방법은 secrets 스킬을 따른다.
+   `fail token`이면 사용자 **별도 터미널**에서 `secrets setup token`과 `secrets setup project main --create`.
+   (Bitwarden 웹 → Secrets Manager → 머신 계정 → 액세스 토큰 → 이 Mac 이름으로 새로 발급. 다른 기기 토큰을 옮기지 않는다.)
+2. **carousel 프로필**: `carousel ls`. 프로필은 `carousel-order` 파일(default 제외)에 있는 이름이고,
+   토큰은 Secrets Manager의 `PERSONAL_CAROUSEL_TOKEN_<이름 대문자>`에 있다. 빠진 프로필은 값을 보지 않고 등록한다.
+   ```bash
+   carousel add dev < /dev/null
+   secrets run --map TOK=PERSONAL_CAROUSEL_TOKEN_DEV -- sh -c 'printf "%s\n" "$TOK" | carousel token dev'
+   carousel order $(cat carousel-order)
+   carousel check        # 토큰이 실제로 동작하는지 (사용량 조금 씀). 실패한 토큰은 사용자에게 알린다.
+   ```
+   - 계정 이메일 라벨은 넣지 않는다 (사용자 선호: 프로필 이름으로 구분).
+   - `default`에 토큰이 없으면 사용자에게 `cc token default`(별도 터미널)를 안내한다.
+   - 단축 명령 `cc`는 dotfiles/zshrc에 있다. 셸이 이전 설정이면 `cc`가 C 컴파일러로 실행되니 `exec zsh`.
+3. **HUD**: Claude Code에서 `/hud`로 점검. 상태 줄은 nvm Node를 **전체 경로**로 실행해야 한다
+   (`hud install`을 그 Node로 실행). Node 버전을 바꾸면 `/hud`를 다시 실행한다.
+   - 설정: `~/.claude/plugins/claude-hud/config.json` ← `dotfiles/claude-hud-config.json`
+     (에이전트·할 일 줄, effort 표시).
+   - 프로필 이름 표시: 설정 폴더마다 `claude-hud.json`에 `display.providerName`=프로필 이름,
+     `showProvider`=true. default는 `~/.claude/claude-hud.json`, 나머지는
+     `~/.claude-carousel/profiles/<이름>/claude-hud.json`. 새 프로필을 만들면 이 파일도 만든다.
+
+## 5-2. 집 맥북 전용 (사용자가 "집 맥북"이라고 했거나 `~/git/vdisplay`가 있을 때만)
 
 `setup.sh --home`(또는 시작 질문에 y)으로 실행하면 DisplayLink Manager(`Brewfile.home`)와
 [vdisplay](https://github.com/jungjoongi/vdisplay)(private)가 설치된다.
@@ -144,6 +173,8 @@ command -v claude gh aws docker node fzf zoxide direnv
 aws --version
 git config --global user.name; git config --global user.email
 gh auth status
+secrets doctor
+carousel ls; carousel order
 ```
 
 ## 설정을 바꿨을 때 (저장소 갱신)
@@ -153,6 +184,8 @@ gh auth status
 - `brew leaves`, `brew list --cask` 와 Brewfile을 비교해 추가/삭제 항목을 반영
   (`brew bundle dump`는 주석/분류가 사라지므로 직접 편집).
 - `~/.zshrc` → `dotfiles/zshrc`, `~/.p10k.zsh` → `dotfiles/p10k.zsh`,
+  `~/.claude/plugins/claude-hud/config.json` → `dotfiles/claude-hud-config.json`,
+  `carousel order` 결과(default 포함) → `carousel-order`,
   `~/.config/karabiner/karabiner.json` → `karabiner/karabiner.json` 복사.
 - 복사 전에 비밀값(토큰, 키, 비밀번호)이 들어가지 않았는지 검사한다. 이 저장소는 public이다.
 - 변경 내용을 보여주고 커밋/푸시는 사용자 확인 후에 한다.

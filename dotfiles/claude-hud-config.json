@@ -1,0 +1,8 @@
+{
+  "display": {
+    "showAgents": true,
+    "showTodos": true,
+    "showEffortLevel": true,
+    "showAgentEffort": true
+  }
+}

@@ -127,3 +127,6 @@ export PATH="$HOME/.local/bin:$PATH"
 # nvm (Homebrew)
 export NVM_DIR="$HOME/.nvm"
 [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
+# >>> claude-carousel alias >>>
+alias cc='carousel'
+# <<< claude-carousel alias <<<
