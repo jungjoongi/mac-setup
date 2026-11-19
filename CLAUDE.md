@@ -54,6 +54,8 @@ command -v claude
 - **Raycast**: 실행 후 Command+Space로 쓰려면 Spotlight 단축키를 먼저 끄도록 안내
   (시스템 설정 → 키보드 → 키보드 단축키 → Spotlight). Karabiner의 Command+Shift+Space 규칙은
   Spotlight를 여는데, Raycast로 바꾸길 원하면 karabiner.json의 해당 규칙을 수정한다.
+- **BetterDisplay**: 첫 실행 후 메뉴바 아이콘에서 설정. 외부 모니터 HiDPI 등을 쓰려면
+  안내에 따라 helper 설치/권한 허용 (사용자 직접).
 - **Rectangle / Maccy / Stats**: 첫 실행 시 손쉬운 사용 권한 요청 → 허용.
   Raycast와 단축키가 겹치면 어느 쪽을 쓸지 사용자에게 묻는다.
 - **키 반복**: `ApplePressAndHoldEnabled` 설정은 로그아웃/재로그인 후 적용된다.
@@ -66,7 +68,18 @@ command -v claude
   `git config --global user.name "..."`, `git config --global user.email "..."`,
   권장: `git config --global init.defaultBranch main`,
   delta 사용: `git config --global core.pager delta`, `git config --global interactive.diffFilter "delta --color-only"`.
-- **GitHub**: `gh auth login` (새 터미널에서 직접, 브라우저 인증) → `gh auth setup-git`.
+- **GitHub + SSH 키**: 사용자에게 `! gh auth login` 실행을 요청하고 아래처럼 고르도록 안내한다.
+  GitHub.com → 프로토콜 **SSH** → 새 SSH 키 생성 **Yes** → passphrase(선택) → 키 이름 →
+  웹 브라우저 로그인. 이러면 `~/.ssh/id_ed25519`가 생성되고 GitHub에 자동 등록된다.
+  - 확인: `ssh -T git@github.com` → `Hi <아이디>!` 가 나오면 성공 (처음엔 `yes` 입력).
+  - passphrase를 넣었다면 `~/.ssh/config`에 추가 (이미 있으면 건너뜀):
+    ```
+    Host github.com
+      AddKeysToAgent yes
+      UseKeychain yes
+      IdentityFile ~/.ssh/id_ed25519
+    ```
+  - 그리고 `ssh-add --apple-use-keychain ~/.ssh/id_ed25519` (사용자 직접, passphrase 입력).
 - **AWS**: `aws configure` 또는 `aws-vault add <프로필>` (새 터미널에서 직접). 키는 Claude가 받지 않는다.
 - **Node**: `nvm install --lts` 후 `node -v` 확인.
 - **Claude Code**: `claude` 첫 실행 시 로그인.

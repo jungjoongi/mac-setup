@@ -43,6 +43,7 @@ cask "comet"
 cask "rectangle"
 cask "maccy"
 cask "stats"
+cask "betterdisplay"
 cask "karabiner-elements"
 
 # ===== 폰트 =====
