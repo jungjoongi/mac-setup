@@ -1,9 +1,9 @@
 #!/bin/bash
 # Mac 개발환경 원클릭 셋업
 # 새 Mac(아무것도 설치 안 된 상태)에서 실행:
-#   curl -fsSL https://raw.githubusercontent.com/__REPO__/main/setup.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/jungjoongi/mac-setup/main/setup.sh | bash
 # 집 맥북 (DisplayLink + vdisplay 포함):
-#   curl -fsSL https://raw.githubusercontent.com/__REPO__/main/setup.sh | bash -s -- --home
+#   curl -fsSL https://raw.githubusercontent.com/jungjoongi/mac-setup/main/setup.sh | bash -s -- --home
 # 이미 받은 저장소에서 실행:
 #   bash setup.sh
 #
@@ -25,7 +25,7 @@ if [[ -z "$HOME_SETUP" ]]; then
   [[ "$ans" =~ ^[Yy] ]] && HOME_SETUP=1 || HOME_SETUP=0
 fi
 
-REPO="${MAC_SETUP_REPO:-__REPO__}"
+REPO="${MAC_SETUP_REPO:-jungjoongi/mac-setup}"
 BRANCH="${MAC_SETUP_BRANCH:-main}"
 SETUP_DIR="$HOME/.mac-setup"
 FAILED=()

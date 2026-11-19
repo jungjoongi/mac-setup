@@ -7,7 +7,7 @@
 터미널(기본 Terminal.app)을 열고:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/__REPO__/main/setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jungjoongi/mac-setup/main/setup.sh | bash
 ```
 
 - 처음에 Mac 로그인 비밀번호를 한 번 입력합니다.
@@ -19,7 +19,7 @@ curl -fsSL https://raw.githubusercontent.com/__REPO__/main/setup.sh | bash
 DisplayLink Manager와 [vdisplay](https://github.com/jungjoongi/vdisplay)(LG 세로 모니터 HiDPI 미러링)까지 설치:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/__REPO__/main/setup.sh | bash -s -- --home
+curl -fsSL https://raw.githubusercontent.com/jungjoongi/mac-setup/main/setup.sh | bash -s -- --home
 ```
 
 - 옵션 없이 실행하면 시작할 때 집 맥북 세팅 여부를 물어봅니다 (`--no-home`이면 묻지 않고 건너뜀).
