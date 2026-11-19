@@ -59,6 +59,12 @@ command -v claude
 - **Rectangle / Maccy / Stats**: 첫 실행 시 손쉬운 사용 권한 요청 → 허용.
   Raycast와 단축키가 겹치면 어느 쪽을 쓸지 사용자에게 묻는다.
 - **키 반복**: `ApplePressAndHoldEnabled` 설정은 로그아웃/재로그인 후 적용된다.
+- **한/영 전환 (Caps Lock)**: Karabiner가 Caps Lock → F19로 바꾸고, setup.sh가 macOS 단축키
+  "이전 입력 소스 선택"을 F19로 설정한다. 새 Mac에는 한국어 입력기가 없으므로 사용자에게
+  시스템 설정 → 키보드 → 입력 소스 → 편집 → **+ → 한국어 → 2벌식** 추가를 안내한다.
+  - 확인: 시스템 설정 → 키보드 → 키보드 단축키 → 입력 소스 → "이전 입력 소스 선택"이 F19(Caps Lock)인지.
+  - 빠르게 타자 치며 전환할 때 지연이 있으면: 입력 소스 표시 팝업이 원인인 경우가 많다.
+    `defaults read kCFPreferencesAnyApplication TSMLanguageIndicatorEnabled` 가 0인지 확인하고, 재로그인.
 
 ## 5. 계정 / 로그인 (사용자 직접, 대화형)
 
