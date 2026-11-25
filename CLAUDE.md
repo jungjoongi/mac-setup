@@ -42,7 +42,7 @@ command -v claude
    **Karabiner-DriverKit-VirtualHIDDevice** 켜기.
 3. 시스템 설정 → 개인정보 보호 및 보안 → 입력 모니터링 →
    **karabiner_grabber**, **karabiner_observer** 켜기.
-4. 확인: Karabiner-Elements → Complex Modifications 탭에 규칙 13개가 켜져 있어야 함
+4. 확인: Karabiner-Elements → Complex Modifications 탭에 규칙 14개(그중 13개 켜짐, Spotlight 규칙은 꺼짐)가 있어야 함
    (Control+숫자 → F1~F12, Command+Shift+Space → 영문 전환 후 Spotlight).
    `~/.config/karabiner/karabiner.json`을 읽어서 규칙 목록을 보여줘도 된다.
 5. Control+숫자가 macOS 데스크탑 전환 단축키와 겹치면
@@ -59,8 +59,13 @@ command -v claude
 - **Rectangle / Maccy / Stats**: 첫 실행 시 손쉬운 사용 권한 요청 → 허용.
   Raycast와 단축키가 겹치면 어느 쪽을 쓸지 사용자에게 묻는다.
 - **키 반복**: `ApplePressAndHoldEnabled` 설정은 로그아웃/재로그인 후 적용된다.
-- **한/영 전환 (Caps Lock)**: Karabiner가 Caps Lock → F19로 바꾸고(simple modification),
+- **한/영 전환 (Caps Lock)**: Karabiner가 Caps Lock을 F19 "탭"으로 바꾸고
+  (complex modification `"to": [f19, vk_none]` — 누르는 즉시 F19 down+up 전송),
   setup.sh가 macOS 단축키 "이전 입력 소스 선택"을 F19로 설정한다.
+  - simple modification(`caps_lock → f19`)으로 되돌리지 않는다. 최신 macOS(27에서 확인)는 이 단축키를
+    키를 **뗄 때** 실행해서, Caps Lock을 떼기 전에 친 첫 글자가 이전 입력 소스로 들어가고(전환 지연처럼 느껴짐)
+    길게 누르면 전환이 취소된다. `vk_none`을 뒤에 붙이면 F19가 즉시 떼진 것으로 처리돼 해결된다.
+    단축키의 fn 플래그(8388608)는 이 동작과 무관하다(0으로 바꿔도 동일, 확인함).
   - Karabiner가 입력 소스를 직접 바꾸는 방식(`select_input_source`)은 쓰지 않는다. 상단바만 바뀌고
     입력칸에는 반영되지 않는 경우가 있다. macOS 기본 "Caps Lock 키로 ABC 입력 소스 전환"도 끈다.
   - 새 Mac에는 한국어 입력기가 없으므로 사용자에게 시스템 설정 → 키보드 → 입력 소스 → 편집 →

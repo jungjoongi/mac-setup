@@ -248,7 +248,7 @@ step "git-lfs, macOS 설정"
 git lfs install >/dev/null 2>&1 || true
 defaults write -g ApplePressAndHoldEnabled -bool false   # 키 길게 누르면 반복 입력
 defaults write kCFPreferencesAnyApplication TSMLanguageIndicatorEnabled 0   # 입력 소스 전환 팝업 끄기 (한/영 전환 지연 방지)
-# 한/영 전환: Karabiner가 Caps Lock → F19, macOS "이전 입력 소스 선택" = F19 (숫자 타입으로 저장해야 인식됨)
+# 한/영 전환: Karabiner가 Caps Lock → F19 탭(누르는 즉시 down+up), macOS "이전 입력 소스 선택" = F19 (숫자 타입으로 저장해야 인식됨)
 defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 60 '<dict><key>enabled</key><true/><key>value</key><dict><key>parameters</key><array><integer>65535</integer><integer>80</integer><integer>8388608</integer></array><key>type</key><string>standard</string></dict></dict>'
 /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u 2>/dev/null || true
 ok "키 반복, 입력 소스 팝업 끄기, Caps Lock(F19) 한/영 전환 (재로그인 후 적용)"
